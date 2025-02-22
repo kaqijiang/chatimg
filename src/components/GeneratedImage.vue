@@ -17,7 +17,6 @@ const emit = defineEmits<{
 const downloading = ref(false);
 const editedPrompt = ref(props.prompt);
 const promptHistory = ref<string[]>([]);
-const maxHistoryItems = 1;
 const showCopyTooltip = ref(false);
 const isUpdatingPrompt = ref(false);
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
