@@ -1,0 +1,108 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import StepIndicator from './components/StepIndicator.vue';
+import PromptInput from './components/PromptInput.vue';
+import OptimizedPrompt from './components/OptimizedPrompt.vue';
+import GeneratedImage from './components/GeneratedImage.vue';
+import { apiService } from './services/api';
+
+const currentStep = ref(1);
+const originalPrompt = ref('');
+const optimizedPrompt = ref('');
+const generatedImageUrl = ref('');
+const isLoading = ref(false);
+const error = ref('');
+
+const optimizePrompt = async (prompt: string) => {
+  error.value = '';
+  originalPrompt.value = prompt;
+  try {
+    isLoading.value = true;
+    const optimized = await apiService.generatePrompt(prompt);
+    optimizedPrompt.value = optimized;
+    currentStep.value = 2;
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'An error occurred while generating the prompt';
+    console.error('Error optimizing prompt:', err);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const generateImage = async (prompt: string) => {
+  error.value = '';
+  try {
+    isLoading.value = true;
+    const imageUrl = await apiService.generateImage(prompt);
+    generatedImageUrl.value = imageUrl;
+    currentStep.value = 3;
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'An error occurred while generating the image';
+    console.error('Error generating image:', err);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const handleUpdatePrompt = (prompt: string) => {
+  optimizedPrompt.value = prompt;
+};
+
+const handleGenerateImage = async (prompt: string) => {
+  await generateImage(prompt);
+};
+
+const handleNewPrompt = () => {
+  currentStep.value = 1;
+  originalPrompt.value = '';
+  optimizedPrompt.value = '';
+  generatedImageUrl.value = '';
+  error.value = '';
+};
+
+const handleStepClick = (step: number) => {
+  currentStep.value = step;
+};
+</script>
+
+<template>
+  <div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+      <h1 class="text-3xl font-bold text-center mb-8 text-gray-900">
+        AI Image Generator
+      </h1>
+      
+      <StepIndicator 
+        :current-step="currentStep"
+        @step-click="handleStepClick"
+      />
+      
+      <div v-if="error" class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+        {{ error }}
+      </div>
+      
+      <div class="space-y-8">
+        <PromptInput
+          v-if="currentStep === 1"
+          @submit="optimizePrompt"
+          :loading="isLoading"
+        />
+        
+        <OptimizedPrompt
+          v-if="currentStep === 2"
+          :optimized-prompt="optimizedPrompt"
+          @confirm="generateImage"
+        />
+        
+        <GeneratedImage
+          v-if="currentStep === 3"
+          :image-url="generatedImageUrl"
+          :prompt="optimizedPrompt"
+          :loading="isLoading"
+          @update-prompt="handleUpdatePrompt"
+          @generate-image="handleGenerateImage"
+        />
+      </div>
+    </div>
+  </div>
+</template>
