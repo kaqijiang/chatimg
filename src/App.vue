@@ -74,7 +74,10 @@ const toggleMode = () => {
 
 <template>
   <div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-[80rem] mx-auto">
+    <div class="mx-auto" :class="{
+      'max-w-[50rem]': mode === 'default' && currentStep !== 3,
+      'max-w-[80rem]': mode === 'default' && currentStep === 3
+    }">
       <div class="flex items-center justify-between mb-8">
         <h1 class="text-3xl font-bold text-gray-900 hidden sm:block">
           AI Image Generator

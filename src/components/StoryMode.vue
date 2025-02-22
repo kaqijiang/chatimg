@@ -77,7 +77,7 @@ const generateResponse = async () => {
       <!-- Chat Input (Left) -->
       <div 
         v-show="!isMobile || (isMobile && activeTab === 'chat')"
-        class="card h-fit"
+        class="card h-full"
       >
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-xl font-semibold">Chat</h2>
@@ -117,22 +117,24 @@ const generateResponse = async () => {
       <!-- Summary Section (Right) -->
       <div 
         v-show="!isMobile || (isMobile && activeTab === 'summary')"
-        class="card h-fit"
+        class="card h-full"
       >
         <h2 class="text-xl font-semibold mb-4">Summary</h2>
         <!-- Keywords -->
-        <div v-if="keywords" class="mb-6">
+        <div class="mb-6">
           <h3 class="font-medium text-gray-700 mb-2">Key Elements:</h3>
-          <div class="bg-gray-50 rounded-lg p-4">
-            <p class="text-gray-700 leading-relaxed">{{ keywords }}</p>
+          <div class="bg-gray-50 rounded-lg p-4 min-h-[100px]">
+            <p v-if="keywords" class="text-gray-700 leading-relaxed">{{ keywords }}</p>
+            <p v-else class="text-gray-400">No key elements generated yet</p>
           </div>
         </div>
 
         <!-- Image Prompt -->
-        <div v-if="imagePrompt">
+        <div>
           <h3 class="font-medium text-gray-700 mb-2">Generated Image Prompt:</h3>
-          <div class="bg-gray-50 rounded-lg p-4">
-            <p class="text-gray-700 leading-relaxed">{{ imagePrompt }}</p>
+          <div class="bg-gray-50 rounded-lg p-4 min-h-[100px]">
+            <p v-if="imagePrompt" class="text-gray-700 leading-relaxed">{{ imagePrompt }}</p>
+            <p v-else class="text-gray-400">No image prompt generated yet</p>
           </div>
         </div>
       </div>
