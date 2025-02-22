@@ -46,6 +46,78 @@ export const apiService = {
     return result.choices[0].message.content;
   },
 
+  async generateStoryResponse(prompt: string): Promise<string> {
+    const response = await fetch(`${API_URL}/v1/chat/completions`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        model: 'claude-3-5-sonnet-20241022',
+        messages: [
+          {
+            role: 'user',
+            content: `As an interactive storyteller, create an engaging and descriptive response to the user's input. Focus on creating a vivid scene with rich visual details that could be translated into an image. The response should be narrative and atmospheric.\n\nUser input: ${prompt}`
+          }
+        ],
+        stream: false
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result: ApiResponse = await response.json();
+    return result.choices[0].message.content;
+  },
+
+  async extractKeywords(text: string): Promise<string> {
+    const response = await fetch(`${API_URL}/v1/chat/completions`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        model: 'claude-3-5-sonnet-20241022',
+        messages: [
+          {
+            role: 'user',
+            content: `Extract key visual elements and themes from the following text. Focus on elements that would be important for creating an image. Present them as a concise, comma-separated list:\n\n${text}`
+          }
+        ],
+        stream: false
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result: ApiResponse = await response.json();
+    return result.choices[0].message.content;
+  },
+
+  async generateImagePrompt(keywords: string): Promise<string> {
+    const response = await fetch(`${API_URL}/v1/chat/completions`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        model: 'claude-3-5-sonnet-20241022',
+        messages: [
+          {
+            role: 'user',
+            content: `Create a detailed image generation prompt based on these key elements: ${keywords}. The prompt should be specific and include style, mood, lighting, and composition details.`
+          }
+        ],
+        stream: false
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result: ApiResponse = await response.json();
+    return result.choices[0].message.content;
+  },
+
   async translateToZh(text: string): Promise<string> {
     const response = await fetch(`${API_URL}/v1/chat/completions`, {
       method: 'POST',
@@ -75,11 +147,6 @@ export const apiService = {
   },
 
   async generateImage(prompt: string): Promise<string> {
-    // // 检查是否包含中文字符
-    // if (containsChinese(prompt)) {
-    //   throw new Error('图片生成不支持中文提示词，请使用英文提示词');
-    // }
-
     const response = await fetch(`${API_URL}/v1/images/generations`, {
       method: 'POST',
       headers,

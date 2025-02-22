@@ -4,6 +4,7 @@ import { apiService } from '../services/api';
 
 const props = defineProps<{
   optimizedPrompt: string;
+  loading?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -11,7 +12,6 @@ const emit = defineEmits<{
 }>();
 
 const editedPrompt = ref(props.optimizedPrompt);
-const isLoading = ref(false);
 const translatedText = ref('');
 const isTranslating = ref(false);
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
@@ -38,17 +38,12 @@ watch(editedPrompt, () => {
 });
 
 const handleConfirm = async () => {
-  if (isLoading.value || isTranslating.value) return;
-  try {
-    isLoading.value = true;
-    emit('confirm', editedPrompt.value);
-  } finally {
-    isLoading.value = false;
-  }
+  if (props.loading || isTranslating.value) return;
+  emit('confirm', editedPrompt.value);
 };
 
 const translateToZh = async () => {
-  if (isLoading.value || isTranslating.value) return;
+  if (props.loading || isTranslating.value) return;
   try {
     isTranslating.value = true;
     const translated = await apiService.translateToZh(editedPrompt.value);
@@ -72,13 +67,13 @@ const translateToZh = async () => {
           v-model="editedPrompt"
           class="input min-h-[120px] max-h-[400px] h-auto resize-y overflow-y-auto"
           placeholder="Edit the optimized prompt..."
-          :disabled="isLoading || isTranslating"
+          :disabled="loading || isTranslating"
           @input="adjustTextareaHeight"
         ></textarea>
         <button 
           @click="translateToZh"
           class="absolute top-2 right-2 px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors duration-200"
-          :disabled="isTranslating || isLoading || !editedPrompt.trim()"
+          :disabled="isTranslating || loading || !editedPrompt.trim()"
         >
           {{ isTranslating ? '翻译中...' : '翻译成中文' }}
         </button>
@@ -95,13 +90,13 @@ const translateToZh = async () => {
       <button 
         @click="handleConfirm"
         class="btn btn-primary w-full flex items-center justify-center gap-2"
-        :disabled="isLoading || isTranslating || !editedPrompt.trim()"
+        :disabled="loading || isTranslating || !editedPrompt.trim()"
       >
         <span 
-          v-if="isLoading" 
+          v-if="loading" 
           class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"
         />
-        {{ isLoading ? 'Processing...' : 'Generate Image' }}
+        {{ loading ? 'Processing...' : 'Generate Image' }}
       </button>
     </div>
   </div>
