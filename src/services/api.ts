@@ -8,10 +8,6 @@ const headers = {
   'Authorization': `Bearer ${API_KEY}`
 };
 
-// 检查是否包含中文字符
-const containsChinese = (text: string): boolean => {
-  return /[\u4E00-\u9FFF]/.test(text);
-};
 
 export const apiService = {
   async generatePrompt(prompt: string): Promise<string> {
