@@ -1,6 +1,6 @@
 import { ApiResponse, ImageGenerationResponse } from '../types';
 
-const API_URL = 'https://purple-cell-4006.kaqijiang.workers.dev';
+const API_URL = 'http://13.231.189.94:9987';
 const API_KEY = 'sk-ExBt7XFo9ldcohYALTAia7k957T08CmPy7s4DXNdW7G9Lyx3';
 
 const headers = {
